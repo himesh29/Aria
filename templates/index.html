@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aria - Financial Assistant</title>
+ <link rel="icon" href="data:image/svg+xml,%3Csvg%20width%3D%22150%22%20height%3D%22150%22%20viewBox%3D%220%200%20150%20150%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%3Cdefs%3E%3Cfilter%20id%3D%22shadow%22%20x%3D%22-50%25%22%20y%3D%22-50%22%20width%3D%22200%25%22%20height%3D%22200%25%22%3E%3CfeDropShadow%20dx%3D%221%22%20dy%3D%221%22%20stdDeviation%3D%221%22%20flood-color%3D%22black%22%20flood-opacity%3D%220.2%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2275%22%20cy%3D%2275%22%20r%3D%2264%22%20fill%3D%22%23576433%22%20filter%3D%22url%28%23shadow%29%22%2F%3E%3Ctext%20x%3D%2275%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-size%3D%2256%22%20fill%3D%22%23f9d249%22%3EAR%3C%2Ftext%3E%3C%2Fsvg%3E" type="image/svg+xml">
+
+
+
+
+
+  <style>
+    /* Styles */
+    body {
+      font-family: 'Raleway', sans-serif;
+      margin: 0;
+      background-color: #f4f6f8;
+      padding: 0;
+    }
+    .chat-container {
+      width: 100%;
+      max-width: 350px;
+      margin: 50px auto;
+      border-radius: 10px;
+      box-shadow: 0 0px 1px rgba(0, 0, 0, 0.16), 0 0px 10px rgba(0, 0, 0, 0.16);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background-color: #f7f7f7;
+      height: 600px;
+    }
+    .chat-header {
+      background-color: #ff8329;
+      color: white;
+      display: flex;
+      justify-content: center;  /* Center the title */
+      align-items: center;
+      padding: 10px 15px;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      position: relative;
+    }
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
+    }
+    .menu {
+      display: none;
+      position: absolute;
+      top: 30px;
+      right: 10px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+    .menu a {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      text-decoration: none;
+      color: black;
+      font-size: 14px;
+    }
+    .menu a i {
+      margin-right: 10px;
+    }
+    .menu a:hover {
+      background-color: #f4f4f4;
+    }
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align bot bubbles to the left */
+}
+
+.chat-bubble {
+  margin: 10px;
+  padding: 10px;
+  border-radius: 15px;
+  word-wrap: break-word;
+  font-size: 14px;
+  display: inline-block; /* Makes the bubble adjust to the size of the text */
+  max-width: 80%; /* Prevents bubbles from taking the entire width */
+}
+
+.user-bubble {
+  background-color: #ff8329; /* User's bubble color */
+  color: white;
+  align-self: flex-end; /* Align user message to the right */
+  margin-left: auto; /* Pushes the bubble to the right */
+  border-radius: 15px 15px 0 15px; /* Round only the top-right and bottom-right corners */
+  padding: 10px; /* Add padding inside the bubble */
+  word-wrap: break-word; /* Ensure long words break and wrap */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add subtle shadow for better contrast */
+}
+
+.copy-icon {
+  font-size: 12px;
+  color: gray;
+  cursor: pointer;
+  margin-left: 5px;
+  vertical-align: middle;
+  transition: color 0.2s;
+}
+
+.copy-icon:hover {
+  color: #ff8329; /* Highlight color when hovered */
+}
+
+.copied-text {
+  font-size: 10px;
+  color: #ff8329;
+  margin-top: 2px;
+  animation: fadeOut 2s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.bot-bubble {
+  background-color: #ffffff; /* Bot's bubble color */
+  color: black;
+  border: 1px solid #ddd; /* Border to distinguish bot's message */
+  align-self: flex-start; /* Align bot message to the left */
+  border-radius: 15px 15px 15px 0; /* Round only the top-left and bottom-left corners */
+  padding: 10px; /* Add padding inside the bubble */
+  word-wrap: break-word; /* Ensure long words break and wrap */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add subtle shadow for better contrast */
+}
+.upload-btn {
+  background-color: #ff8329;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-btn:hover {
+  background-color: #e57300;
+}
+
+.file-input {
+  display: none; /* Hides the input field */
+}
+
+
+    .input-container {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background-color: #fff;
+    }
+    .input-field {
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 10px;
+      margin-right: 10px;
+      background-color: #f2f2d6;
+    }
+    .send-btn {
+      background-color: #ff8329;
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      margin: 10px;
+      color: gray;
+    }
+    .typing-indicator .dot {
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      background-color: gray;
+      animation: typing 1.5s infinite ease-in-out;
+      margin-right: 5px;
+    }
+    .typing-indicator .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .typing-indicator .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes typing {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      ARIA
+      <button class="menu-btn" onclick="toggleMenu()">
+        <i class="fas fa-ellipsis-v"></i>
+      </button>
+      <div class="menu" id="menu">
+        <a href="javascript:void(0)" onclick="clearChat()"><i class="fas fa-trash-alt"></i> Clear </a>
+        <a href="javascript:void(0)" onclick="restartChat()"><i class="fas fa-redo"></i> Restart </a>
+        <a href="javascript:void(0)" onclick="closeChat()"><i class="fas fa-times"></i> Close </a>
+      </div>
+    </div>
+    <div class="chat-body" id="chat-body">
+      <div class="chat-bubble bot-bubble">Hello! I'm Aria, your personal financial assistant. How can I assist you today?</div>
+    </div>
+    <div class="input-container">
+      <label for="file-upload" class="upload-btn">
+        <i class="fas fa-paperclip"></i>
+      </label>
+      <input type="file" id="file-upload" class="file-input" style="display: none;" onchange="handleFileUpload(event)">
+      <input type="text" id="user-input" class="input-field" placeholder="Type your message...">
+      <button class="send-btn" id="send-btn"><i class="fas fa-paper-plane"></i></button>
+</div>
+
+  </div>
+
+
+  <script>
+    const chatBody = document.getElementById('chat-body');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const menu = document.getElementById('menu');
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    function sendMessage() {
+      const userMessage = userInput.value.trim();
+      if (!userMessage) return;
+
+      addBubble(userMessage, 'user-bubble');
+      userInput.value = '';
+      simulateBotResponse(userMessage);
+    }
+
+function addBubble(message, bubbleClass) {
+  if (bubbleClass === 'bot-bubble') {
+    // Create a container for the bot message
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column'; // Align items vertically
+    container.style.alignItems = 'flex-start'; // Align items to the left
+
+    // Add the bot's chat bubble
+    const bubble = document.createElement('div');
+    bubble.style.maxWidth = '80%';
+    bubble.className = `chat-bubble ${bubbleClass}`;
+    bubble.style.position = 'relative'; // For placing the copy button
+    bubble.innerHTML = message;
+
+    // Add a copy button on the bubble
+    const copyIcon = document.createElement('i');
+    copyIcon.className = 'fas fa-copy copy-icon';
+    copyIcon.title = 'Copy message';
+    copyIcon.style.position = 'absolute';
+    copyIcon.style.right = '15px'; // Adjust the position inside the bubble
+    copyIcon.style.transform = 'translateY(-50%)'; // Center vertically
+    copyIcon.style.cursor = 'pointer';
+    copyIcon.onclick = () => copyMessage(message, bubble); // Pass the bubble itself
+    bubble.appendChild(copyIcon);
+
+    container.appendChild(bubble);
+
+    // Add the chatbot avatar image below the bubble
+    const img = document.createElement('img');
+    img.src = "https://i.ibb.co/LZnRr8s/bot-Avatar.webp";
+    img.alt = "Chatbot Avatar";
+    img.style.width = "20px"; // Avatar size
+    img.style.height = "20px";
+    img.style.borderRadius = "50%"; // Circular avatar
+    img.style.marginTop = "5px"; // Space between the bubble and the avatar
+    container.appendChild(img);
+
+    // Append the container to the chat body
+    chatBody.appendChild(container);
+  } else {
+    // Add user message directly as a bubble
+    const bubble = document.createElement('div');
+    bubble.className = `chat-bubble ${bubbleClass}`;
+    bubble.innerHTML = message;
+    chatBody.appendChild(bubble);
+  }
+
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function copyMessage(message, bubble) {
+  navigator.clipboard.writeText(message).then(() => {
+    // Create and display the "Copied" text
+    const copiedText = document.createElement('span');
+    copiedText.className = 'copied-text';
+    copiedText.textContent = 'Copied';
+    copiedText.style.position = 'absolute';
+    copiedText.style.bottom = '20px'; // Position below the bubble
+    copiedText.style.right = '10px'; // Align with the copy button
+    bubble.appendChild(copiedText);
+
+    // Remove the "Copied" text after the animation ends
+    setTimeout(() => {
+      if (copiedText.parentElement) {
+        copiedText.remove();
+      }
+    }, 2000); // Matches the fadeOut animation duration
+  }).catch((error) => {
+    console.error('Error copying message:', error);
+  });
+}
+
+
+
+
+
+
+    function simulateBotResponse(message) {
+      showTyping();
+      fetch('/get_response', {
+        method: 'POST',
+        body: new URLSearchParams({
+          'user_message': message
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        hideTyping();
+        addBubble(data.response, 'bot-bubble');
+      })
+      .catch(error => {
+        hideTyping();
+        addBubble("Sorry, I couldn't understand that.", 'bot-bubble');
+      });
+    }
+
+    function showTyping() {
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'typing-indicator';
+      typingIndicator.innerHTML = `
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>`;
+      chatBody.appendChild(typingIndicator);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    
+    function hideTyping() {
+      const typingIndicator = document.querySelector('.typing-indicator');
+      if (typingIndicator) typingIndicator.remove();
+    }
+
+    function toggleMenu() {
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function clearChat() {
+      chatBody.innerHTML = '';
+      toggleMenu();
+    }
+
+    function restartChat() {
+      clearChat();
+      addBubble("Hello! I'm Aria, your personal financial assistant. How can I assist you today?", 'bot-bubble');
+      toggleMenu();
+    }
+
+    function closeChat() {
+      document.querySelector('.chat-container').style.display = 'none';
+      toggleMenu();
+    }
+    
+ function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Create a message bubble indicating the file is being uploaded
+  addBubble(`Uploading file: ${file.name}`, 'user-bubble');
+
+  // Prepare the file for upload
+  const formData = new FormData();
+  formData.append('file', file);
+
+  // Send the file to the backend
+  fetch('/upload', {
+    method: 'POST',
+    body: formData,
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        addBubble(`File uploaded successfully: ${file.name}`, 'bot-bubble');
+      } else {
+        addBubble(`Failed to upload file: ${file.name}`, 'bot-bubble');
+      }
+    })
+    .catch(error => {
+      console.error('Error uploading file:', error);
+      addBubble(`Error uploading file: ${file.name}`, 'bot-bubble');
+    });
+}
+
+  </script>
+</body>
+</html>
