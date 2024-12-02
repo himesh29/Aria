@@ -9,19 +9,17 @@ GEMINI_API_KEY = "AIzaSyBPBlUeKsISDBQGBV-5iihKtwF4aBjWAO4"  # Replace with your 
 # Configure the Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Create the model configuration
+# Create the model configuration (removed the invalid "response_mime_type")
 generation_config = {
     "temperature": 1,
     "top_p": 0.95,
     "top_k": 40,
     "max_output_tokens": 8192,
-    "response_mime_type": "text/plain",
 }
 
 # Create the generative model
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=generation_config,
+    model_name="gemini-1.5-flash", generation_config=generation_config
 )
 
 # Start a chat session
@@ -43,7 +41,6 @@ def index():
 @app.route('/get_response', methods=['POST'])
 def get_response():
     user_message = request.form['user_message']
-    
     try:
         # Send user message to Gemini API for response
         response = chat_session.send_message(user_message)
@@ -54,9 +51,8 @@ def get_response():
         # Check if response is empty or invalid
         if not html_response:
             return jsonify({'response': 'Sorry, I couldn’t generate a response.'})
-        
-        return jsonify({'response': html_response})
 
+        return jsonify({'response': html_response})
     except Exception as e:
         # Handle any errors during response generation
         return jsonify({'response': 'Error generating response: ' + str(e)}), 500
@@ -65,7 +61,6 @@ def get_response():
 def upload_file():
     if 'file' not in request.files:
         return jsonify({'success': False, 'message': 'No file uploaded'}), 400
-
     file = request.files['file']
     if file.filename == '':
         return jsonify({'success': False, 'message': 'No selected file'}), 400
@@ -74,7 +69,7 @@ def upload_file():
         # Save the file to the uploads folder
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
-        
+
         # Return success message with the uploaded file's name
         return jsonify({'success': True, 'message': 'File uploaded successfully', 'filename': file.filename})
     except Exception as e:
